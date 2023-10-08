@@ -1,0 +1,31 @@
+--- SPIS PACZEK NuGet ---
+
+- Azure.Core 1.28.0
+- Azure.Extensions.AspNetCore.Configuration.Secrets 1.2.2
+- Azure.Identity 1.8.2
+- Azure.ResourceManager.AppService 1.0.0
+- Azure.Security.KeyVaultSecrets 4.4.0
+- BCrypt.Net-Core 1.6.0
+- Microsoft.AspNetCore.Cors 2.2.0 (OUTDATED) 
+- Microsoft.AspNetCore.Mvc.ViewFeatures 2.2.0 (OUTDATED) 
+- Microsoft.AspNetCore.Mvc.Core 2.2.5 (OUTDATED) 
+- Microsoft.AspNetCore.Routing 2.2.2 (OUTDATED) 
+- Microsoft.AspNetCore.SpaProxy 7.0.3
+- Microsoft.Data.SqlClient 5.1.0
+- Microsoft.EntityFrameworkCore 7.0.3
+- Microsoft.EntityFrameworkCore.Design 7.0.3
+- Microsoft.EntityFrameworkCore.InMemory 7.0.3
+- Microsoft.EntityFrameworkCore.Relational 7.0.3
+- Microsoft.EntityFrameworkCore.SqlServer 7.0.3
+- Microsoft.EntityFrameworkCore.Tools 7.0.3
+- Microsoft.Extensions.DependencyInjection 7.0.0
+- Microsoft.Identity.Client 4.50.0
+- Microsoft.NET.Test.Sdk 17.6.3
+- Microsoft.NETCore.App 2.2.8 (OUTDATED)
+- Moq 4.18.4
+- Moq.Analyzers 0.0.9
+- Moq.EntityFrameworkCore 7.0.0.2
+- System.Data.SqlClient 4.8.5
+- xunit 2.4.2
+- xunit.assert 2.4.2
+- xunit.runner.visualstudio 2.4.5

@@ -1,0 +1,17 @@
+/*
+TODO:
+-testy jednostkowe
+-code first
+-health check
+-stronka react npm
+-db
+-azure check
+-keyvault
+-push danych do bazy
+-diagramy dokumentacja
+-controllers
+-konwersje jakies 
+-use cases itp itd
+-check w backendzie, że w tabeli users user nie moze mieć bitu 1 przy pracowniku i supplierze jednoczesnie
+i to na razie tyle
+*/
