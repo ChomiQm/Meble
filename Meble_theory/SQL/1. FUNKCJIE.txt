@@ -1,0 +1,64 @@
+-- VALIDATION PHONE NUMBER FUNCTION --
+
+CREATE FUNCTION [dbo].[ValidatePhoneNumber] (@phoneNumber VARCHAR(20))
+RETURNS BIT
+AS
+BEGIN
+    DECLARE @result BIT;
+
+    IF PATINDEX('+[0-9][0-9] [0-9][0-9][0-9]-[0-9][0-9][0-9]-[0-9][0-9][0-9]', @phoneNumber) > 0
+        SET @result = 1;
+    ELSE IF PATINDEX('+[0-9][0-9][0-9] [0-9][0-9][0-9]-[0-9][0-9][0-9]-[0-9][0-9][0-9]', @phoneNumber) > 0
+        SET @result = 1;
+    ELSE
+        SET @result = 0;
+
+    RETURN @result;
+END;
+
+-- END OF VALITATION PHONE NUMBER FUNCTION --
+
+-- VALITATION EMAIL FUNCTION -- 
+
+CREATE FUNCTION dbo.ValidateEmail(@email_address VARCHAR(100))
+RETURNS BIT
+AS
+BEGIN
+    DECLARE @result BIT
+
+    IF (
+        CHARINDEX(' ', LTRIM(RTRIM(@email_address))) = 0
+        AND LEFT(LTRIM(RTRIM(@email_address)), 1) <> '@'
+        AND RIGHT(RTRIM(LTRIM(@email_address)), 1) <> '.'
+        AND CHARINDEX('.', @email_address, CHARINDEX('@', @email_address)) - CHARINDEX('@', @email_address) > 1
+        AND LEN(LTRIM(RTRIM(@email_address))) - LEN(REPLACE(LTRIM(RTRIM(@email_address)), '@', '')) = 1
+        AND CHARINDEX('.', REVERSE(LTRIM(RTRIM(@email_address)))) >= 3
+        AND (CHARINDEX('.@', @email_address) = 0 AND CHARINDEX('..', @email_address) = 0)
+    )
+        SET @result = 1;
+    ELSE
+        SET @result = 0;
+
+    RETURN @result;
+END;
+
+-- END OF VALIDATION EMAIL FUNCTION --
+
+-- VALIDATION ADDRESS FUNCTION --
+
+CREATE FUNCTION [dbo].[ValidateAddress] (@address VARCHAR(200))
+RETURNS BIT
+AS
+BEGIN
+    DECLARE @result BIT;
+
+    -- pattern "Kraj, Miasto, Ulica, NumerDomu/NumerMieszkania"
+    IF PATINDEX('^[A-Z][a-zA-Z ]*, [A-Z][a-zA-Z ]*, [A-Z0-9][a-zA-Z0-9 ]*, [0-9]+(/[0-9]+)?$', @address) > 0
+        SET @result = 1;
+    ELSE
+        SET @result = 0;
+
+    RETURN @result;
+END;
+
+-- END OF VALIDATION ADDRESS FUNCTION --

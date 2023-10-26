@@ -1,0 +1,76 @@
+-- Tabela "Roles" przechowuje informacje o rolach użytkowników
+CREATE TABLE Roles (
+    role_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
+    role_name VARCHAR(50) NOT NULL
+);
+
+-- Tabela "Users" przechowuje informacje o użytkownikach
+CREATE TABLE Users (
+    user_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
+    user_login VARCHAR(100) UNIQUE NOT NULL,
+    user_password VARCHAR(64) NOT NULL,
+    user_date_of_update DATETIME DEFAULT GETDATE(),
+    user_first_name VARCHAR(100) NOT NULL,
+    user_surname VARCHAR(100) NOT NULL,
+    user_address VARCHAR(200) NOT NULL,
+    user_phone VARCHAR(20) NOT NULL,
+    user_mail VARCHAR(100) NOT NULL,
+);
+
+-- Dodaj klucz obcy "role_id" w tabeli "Users" do relacji
+ALTER TABLE Users
+ADD role_id INT;
+
+-- Utwórz relację wiele do wielu między tabelami "Users" i "Roles" za pomocą klucza obcego "role_id"
+ALTER TABLE Users
+ADD CONSTRAINT FK_Users_Roles FOREIGN KEY (role_id)
+REFERENCES Roles(role_id);
+
+
+-- Tabela "Furniture" przechowuje informacje o meblach
+CREATE TABLE Furniture ( 
+    furniture_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
+    furniture_name VARCHAR(100) NOT NULL,
+    furniture_price DECIMAL(10, 2) NOT NULL CHECK (furniture_price > 0),
+    furniture_date_of_addition DATE CHECK(furniture_date_of_addition <= GETDATE()),
+    furniture_description VARCHAR(MAX),
+    furniture_date_of_update DATETIME DEFAULT GETDATE(),
+);
+
+-- Tabela "ClientOrders" przechowuje informacje o zamówieniach od klientów
+CREATE TABLE ClientOrders (
+    order_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
+    order_user_id INT NOT NULL,
+    order_date_of_order DATE,
+    order_date_of_update DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (order_user_id) REFERENCES users(user_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Tabela "OrderFurniture" przechowuje informacje o łączeniu zamówień z meblami
+CREATE TABLE OrderFurniture (
+    order_furniture_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
+    order_id INT,
+    furniture_id INT,
+    FOREIGN KEY (order_id) REFERENCES ClientOrders(order_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (furniture_id) REFERENCES Furniture(furniture_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+-- Tabela "FurniturePhotos" przechowuje informacje o zdjęciach mebli
+CREATE TABLE FurniturePhotos (
+    photo_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
+    photo_furniture_id INT NOT NULL,
+    photo_url VARCHAR(200) NOT NULL,
+    photo_description VARCHAR(200) NOT NULL,
+    photo_date_of_update DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (photo_furniture_id) REFERENCES Furniture(furniture_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Tabela "FurnitureCategories" przechowuje informacje o kategoriach mebli
+CREATE TABLE FurnitureCategories (
+    category_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
+    category_name VARCHAR(50) NOT NULL,
+    category_furniture_id INT NOT NULL,
+    category_date_of_update DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (category_furniture_id) REFERENCES Furniture(furniture_id) ON DELETE CASCADE ON UPDATE CASCADE
+);

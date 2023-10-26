@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34212.112
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Meble.Server", "Meble.Server\Meble.Server.csproj", "{6F3F3138-735E-4C3A-9623-8A85AB7CBACA}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "meble.client", "meble.client\meble.client.esproj", "{0A9744A9-D99D-4B34-8806-0FD657AE518D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6F3F3138-735E-4C3A-9623-8A85AB7CBACA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F3F3138-735E-4C3A-9623-8A85AB7CBACA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F3F3138-735E-4C3A-9623-8A85AB7CBACA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F3F3138-735E-4C3A-9623-8A85AB7CBACA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A9744A9-D99D-4B34-8806-0FD657AE518D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A9744A9-D99D-4B34-8806-0FD657AE518D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A9744A9-D99D-4B34-8806-0FD657AE518D}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{0A9744A9-D99D-4B34-8806-0FD657AE518D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A9744A9-D99D-4B34-8806-0FD657AE518D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A9744A9-D99D-4B34-8806-0FD657AE518D}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {872CDDBF-ADCB-4F8F-BEF5-F8F869298B2C}
+	EndGlobalSection
+EndGlobal
