@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/0.5.126-alpha">
+﻿<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/0.5.126-alpha">
   <PropertyGroup>
     <StartupCommand>npm run dev</StartupCommand>
     <JavaScriptTestRoot>src\</JavaScriptTestRoot>
@@ -10,11 +10,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="public\assets\" />
-    <Folder Include="src\components\button\" />
-    <Folder Include="src\components\input\" />
-    <Folder Include="src\hooks\" />
-    <Folder Include="src\utils\" />
-    <Folder Include="src\styles\" />
-    <Folder Include="src\services\" />
+    <Folder Include="src\components\actions\" />
+    <Folder Include="src\components\reducers\" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptConfiguration Remove="Tests\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Tests\**" />
   </ItemGroup>
 </Project>

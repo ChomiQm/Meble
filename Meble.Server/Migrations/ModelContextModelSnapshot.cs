@@ -18,7 +18,7 @@ namespace Meble.Server.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("dbo")
-                .HasAnnotation("ProductVersion", "8.0.0-rc.2.23480.1")
+                .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -32,7 +32,7 @@ namespace Meble.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"));
 
-                    b.Property<DateOnly?>("OrderDateOfOrder")
+                    b.Property<DateOnly>("OrderDateOfOrder")
                         .HasColumnType("date")
                         .HasColumnName("DateOfOrder");
 
@@ -42,10 +42,25 @@ namespace Meble.Server.Migrations
                         .HasColumnName("ClientOrderDateOfUpdate")
                         .HasDefaultValueSql("(getdate())");
 
+                    b.Property<string>("OrderStatus")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(15)")
+                        .HasColumnName("OrderStatus");
+
                     b.Property<string>("OrderUserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)")
                         .HasColumnName("OrderUserId");
+
+                    b.Property<int>("TotalItemsOrdered")
+                        .HasColumnType("int")
+                        .HasColumnName("TotalItemsOrdered");
+
+                    b.Property<decimal>("TotalOrderValue")
+                        .HasColumnType("decimal(18, 2)")
+                        .HasColumnName("TotalOrderValue");
 
                     b.HasKey("OrderId")
                         .HasName("PK_ClientOrder");
@@ -89,6 +104,12 @@ namespace Meble.Server.Migrations
                     b.Property<decimal>("FurniturePrice")
                         .HasColumnType("decimal(10, 2)")
                         .HasColumnName("Price");
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
 
                     b.HasKey("FurnitureId")
                         .HasName("PK_Furniture");
@@ -188,6 +209,9 @@ namespace Meble.Server.Migrations
                         .HasColumnType("int")
                         .HasColumnName("OrderId");
 
+                    b.Property<int?>("QuantityOrdered")
+                        .HasColumnType("int");
+
                     b.HasKey("OrderFurnitureId")
                         .HasName("PK_OrderFurniture");
 
@@ -246,9 +270,6 @@ namespace Meble.Server.Migrations
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
-                    b.Property<string>("UserDataId")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime?>("UserDateOfUpdate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
@@ -305,6 +326,9 @@ namespace Meble.Server.Migrations
                         .HasColumnType("int")
                         .HasColumnName("UserdataHomeNumber");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("UserStreet")
                         .IsRequired()
                         .HasMaxLength(80)
@@ -327,6 +351,10 @@ namespace Meble.Server.Migrations
                         .HasColumnName("UserdataTown");
 
                     b.HasKey("UserDataId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
 
                     b.ToTable("UserDatas", "dbo");
                 });
@@ -523,10 +551,7 @@ namespace Meble.Server.Migrations
                 {
                     b.HasOne("Meble.Server.Models.User", "User")
                         .WithOne("UserDatas")
-                        .HasForeignKey("Meble.Server.Models.UserData", "UserDataId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_UserData_User");
+                        .HasForeignKey("Meble.Server.Models.UserData", "UserId");
 
                     b.Navigation("User");
                 });

@@ -7,7 +7,7 @@ namespace Meble.Server.Models;
 public partial class ModelContext : IdentityDbContext<User>
 {
     private readonly IConfiguration _configuration;
-   
+
     public ModelContext(DbContextOptions<ModelContext> options, IConfiguration configuration)
         : base(options)
     {
@@ -19,23 +19,21 @@ public partial class ModelContext : IdentityDbContext<User>
     public virtual DbSet<FurnitureCategory> FurnitureCategories { get; set; }
     public virtual DbSet<FurniturePhoto> FurniturePhotos { get; set; }
     public virtual DbSet<OrderFurniture> OrderFurnitures { get; set; }
-    public DbSet<UserData> UserDatas { get; set; }
+    public virtual DbSet<UserData> UserDatas { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        if (_configuration == null)
+        if (!optionsBuilder.IsConfigured)
         {
-            throw new Exception("IConfiguration is null. Make sure it is properly configured.");
+            var connectionString = _configuration.GetConnectionString("DefaultConnection");
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new Exception("Connection string 'DefaultConnection' is empty or whitespace.");
+            }
+
+            optionsBuilder.UseSqlServer(connectionString);
         }
-
-        string? connectionString = _configuration.GetConnectionString("ConnectionString");
-
-        if (string.IsNullOrWhiteSpace(connectionString))
-        {
-            throw new Exception("Connection string from secrets.json is empty or whitespace.");
-        }
-
-        optionsBuilder.UseSqlServer(connectionString);
     }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         
@@ -60,7 +58,7 @@ public partial class ModelContext : IdentityDbContext<User>
 
         modelBuilder.Entity<IdentityRoleClaim<string>>()
             .ToTable("RoleClaims");
- 
+
         modelBuilder.Entity<ClientOrder>(entity =>
         {
             entity.HasKey(e => e.OrderId).HasName("PK_ClientOrder");
@@ -74,6 +72,19 @@ public partial class ModelContext : IdentityDbContext<User>
                 .HasColumnType("datetime")
                 .HasColumnName("ClientOrderDateOfUpdate");
             entity.Property(e => e.OrderUserId).HasColumnName("OrderUserId");
+
+            entity.Property(e => e.TotalOrderValue) 
+                .HasColumnType("decimal(18, 2)") 
+                .HasColumnName("TotalOrderValue");
+
+            entity.Property(e => e.OrderStatus)
+                .HasMaxLength(15)
+                .IsUnicode(true)
+                .HasColumnName("OrderStatus");
+
+            entity.Property(e => e.TotalItemsOrdered) 
+                .HasColumnType("int") 
+                .HasColumnName("TotalItemsOrdered");
 
             entity.HasOne(d => d.OrderUser).WithMany(p => p.ClientOrders)
                 .HasForeignKey(d => d.OrderUserId)
@@ -103,6 +114,9 @@ public partial class ModelContext : IdentityDbContext<User>
             entity.Property(e => e.FurniturePrice)
                 .HasColumnType("decimal(10, 2)")
                 .HasColumnName("Price");
+            entity.Property(e => e.Quantity)
+            .HasColumnType("integer");
+
         });
 
         modelBuilder.Entity<FurnitureCategory>(entity =>
@@ -177,17 +191,11 @@ public partial class ModelContext : IdentityDbContext<User>
         modelBuilder.Entity<User>(entity =>
         {
             entity.ToTable("Users");
-
+            // Przyjmujemy, że klasa User ma właściwość Id jako klucz główny.
             entity.Property(e => e.UserDateOfUpdate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("DateOfUpdate");
-
-            entity.HasOne(u => u.UserDatas)
-                .WithOne(d => d.User)
-                .HasForeignKey<UserData>(d => d.UserDataId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK_User_UserData");
 
             entity.HasMany(u => u.ClientOrders)
                 .WithOne(co => co.OrderUser)
@@ -201,6 +209,10 @@ public partial class ModelContext : IdentityDbContext<User>
             entity.ToTable("UserDatas");
 
             entity.HasKey(e => e.UserDataId);
+            entity.HasOne(ud => ud.User)
+                  .WithOne(u => u.UserDatas)
+                  .HasForeignKey<UserData>(ud => ud.UserId);
+
             entity.Property(e => e.UserFirstName)
                 .IsRequired()
                 .HasMaxLength(80)
@@ -242,15 +254,7 @@ public partial class ModelContext : IdentityDbContext<User>
                 .HasMaxLength(80)
                 .IsUnicode(true)
                 .HasColumnName("UserdataFlatNumber");
-
-
-            // Relacja User - UserData (1:1)
-            entity.HasOne(e => e.User)
-                .WithOne(u => u.UserDatas)
-                .HasForeignKey<UserData>(e => e.UserDataId)
-                .HasConstraintName("FK_UserData_User");
         });
-
         OnModelCreatingPartial(modelBuilder);
     }
 

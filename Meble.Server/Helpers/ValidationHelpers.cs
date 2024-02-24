@@ -13,7 +13,7 @@ namespace Meble.Server.Helpers
             }
             else
             {
-                return (false, "Invalid phone number format");
+                return (false, "Invalid phone number format.");
             }
         }
         public static (bool isValid, string? errorMessage) IsEmailValid(string email)
@@ -25,7 +25,7 @@ namespace Meble.Server.Helpers
             }
             else
             {
-                return (false, "Invalid email address"); 
+                return (false, "Invalid email address format."); 
             }
         }
         public static (bool isValid, string? errorMessage) IsPasswordValid(string password)
@@ -37,7 +37,7 @@ namespace Meble.Server.Helpers
             }
             else
             {
-                return (false, "Invalid password format"); 
+                return (false, "Invalid password format."); 
             }
         }
         public static (bool isValid, string? errorMessage) IsPriceValid(decimal price)
@@ -48,8 +48,77 @@ namespace Meble.Server.Helpers
             }
             else
             {
-                return (false, "Price must be greater than 0"); 
+                return (false, "Price must be greater than 0."); 
             }
         }
+        public static (bool isValid, string? errorMessage) IsNameValid(string name)
+        {
+            string nameRegex = @"^[A-ZĄĆĘŁŃÓŚŹŻ][a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+(?: [A-ZĄĆĘŁŃÓŚŹŻ][a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+)*$";
+
+            if (Regex.IsMatch(name, nameRegex))
+            {
+                return (true, null);
+            }
+            else
+            {
+                return (false, "Invalid name format.");
+            }
+        }
+        public static (bool isValid, string? errorMessage) IsTownValid(string text) {
+            string townRegex = @"^[A-ZĄĆĘŁŃÓŚŹŻ][a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ\s\.\-]*(?<![\s\.\-])$";
+
+            if (Regex.IsMatch(text, townRegex))
+            {
+                return (true, null);
+            }
+            else {
+                return (false, "Invaild town format.");
+            }
+
+        }
+        public static (bool isValid, string? errorMessage) IsStreetValid(string text)
+        {
+            string streetRegex = @"^[A-ZĄĆĘŁŃÓŚŹŻa-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ0-9\s\.\-]*$";
+
+            if (Regex.IsMatch(text, streetRegex))
+            {
+                return (true, null);
+            }
+            else
+            {
+                return (false, "Invalid street format.");
+            }
+        }
+
+
+        public static (bool isValid, string? errorMessage) IsCountryValid(string text)
+        {
+            string countryRegex = @"^[A-ZĄĆĘŁŃÓŚŹŻ][a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ\s\-\']*$";
+
+            if (Regex.IsMatch(text, countryRegex))
+            {
+                return (true, null);
+            }
+            else
+            {
+                return (false, "Invaild country format.");
+            }
+
+        }
+
+        public static (bool isValid, string? errorMessage) IsFLatNumberValid(string text)
+        {
+            string flatRegex = @"^\d+[A-Za-z]?([-\/]\d*[A-Za-z]*)*$";
+            if (Regex.IsMatch(text, flatRegex))
+            {
+                return (true, null);
+            }
+            else
+            {
+                return (false, "Invaild flat number format.");
+            }
+
+        }
+
     }
 }

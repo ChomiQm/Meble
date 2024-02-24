@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Meble.Server.Models;
 
@@ -12,6 +13,6 @@ public partial class FurniturePhoto
     [Required]
     public string PhotoDescription { get; set; } = null!;
     public DateTime? PhotoDateOfUpdate { get; set; }
-    [Required]
-    public virtual Furniture PhotoFurniture { get; set; } = null!;
+    [JsonIgnore]
+    public virtual Furniture? PhotoFurniture { get; set; }
 }

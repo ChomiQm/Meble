@@ -15,8 +15,9 @@ namespace Meble.Server.Models
         public string UserCountry { get; set; } = null!;
         [Required]
         public string UserTown { get; set; } = null!;
-        [Required]
-        public string UserStreet { get; set; } = null!;
+        [JsonIgnore]
+        public string? UserId { get; set; } 
+        public string? UserStreet { get; set; }
         public int? UserHomeNumber { get; set; }
         public string? UserFlatNumber { get; set; }
         [JsonIgnore]

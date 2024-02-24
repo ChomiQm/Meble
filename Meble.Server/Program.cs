@@ -2,24 +2,37 @@ using Meble.Server.HealthChecks;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Serilog;
 using System.Security.Claims;
 using Microsoft.OpenApi.Models;
 using Meble.Server.Models;
 using HealthChecks.UI.Client;
+using Meble.Server.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-// CFG secret
-var userSecretsConfiguration = new ConfigurationBuilder()
-    .SetBasePath(builder.Environment.ContentRootPath)
-    .AddUserSecrets<Program>()
-    .Build();
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true);
+
+builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrEmpty(connectionString))
+{
+    throw new ArgumentNullException("ConnectionString for 'DefaultConnection' not found");
+}
+
 
 builder.Services.AddDbContext<ModelContext>();
-builder.Services.AddAuthentication()
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = IdentityConstants.BearerScheme;
+    options.DefaultChallengeScheme = IdentityConstants.BearerScheme;
+
+})
     .AddBearerToken(IdentityConstants.BearerScheme)
-    .AddCookie(IdentityConstants.ApplicationScheme);
+    .AddIdentityCookies();
 
 builder.Services.AddAuthorizationBuilder();
 
@@ -32,11 +45,11 @@ builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.HttpOnly = true;
     options.ExpireTimeSpan = TimeSpan.FromDays(5);
-    options.LoginPath = "./login";
+    options.LoginPath = "/login";
     options.SlidingExpiration = true;
 });
 
-builder.Services.AddEndpointsApiExplorer(); 
+builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -46,10 +59,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 });
 
 builder.Services.AddControllersWithViews();
-
-Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration.GetSection("Serilog"))
-    .CreateLogger();
+builder.Services.AddSingleton<Meble.Server.Services.AzureBlobService>();
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -63,16 +73,26 @@ builder.Services.AddSwaggerGen(c =>
 
 });
 
-builder.Services.AddHealthChecks()
-    .AddCheck<HealthCheck>("database");
-
-builder.Services.AddSingleton<IConfiguration>(userSecretsConfiguration);
-
-var connectionString = userSecretsConfiguration["ConnectionStrings:HealthTestConnectionString"];
-if (string.IsNullOrEmpty(connectionString))
+var healthTestConnectionString = builder.Configuration.GetConnectionString("HealthTestConnectionString");
+if (string.IsNullOrEmpty(healthTestConnectionString))
 {
     throw new ArgumentNullException("ConnectionString not found");
 }
+
+builder.Services.AddHealthChecks()
+    .AddCheck<HealthCheck>("database");
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DefaultCorsPolicy", builder =>
+    {
+        builder.WithOrigins("https://localhost:5173")
+                .AllowAnyMethod()
+                .WithHeaders("content-type", "authorization") // Dodaj "authorization" tutaj
+                .AllowCredentials();
+    });
+});
 
 var app = builder.Build();
 
@@ -80,6 +100,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
 }
 
 else
@@ -94,11 +115,11 @@ app.MapHealthChecks("/health", new HealthCheckOptions
     Predicate = _ => true,
     AllowCachingResponses = false,
     ResultStatusCodes =
-    {
-        [HealthStatus.Healthy] = 200,
-        [HealthStatus.Degraded] = 200,
-        [HealthStatus.Unhealthy] = 503
-    }
+{
+[HealthStatus.Healthy] = 200,
+[HealthStatus.Degraded] = 200,
+[HealthStatus.Unhealthy] = 503
+}
 });
 
 app.UseHttpsRedirection();
@@ -106,11 +127,15 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseCors("DefaultCorsPolicy");
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapIdentityApi<User>();
 app.MapGet("/", (ClaimsPrincipal user) => $"{user.Identity!.Name}")
     .RequireAuthorization();
+
+app.MapControllers();
 
 //seed initial data
 using (var scope = app.Services.CreateScope())
@@ -134,16 +159,17 @@ using (var scope = app.Services.CreateScope())
 
     if (await userManager.FindByNameAsync(email) == null)
     {
-        var user = new User();
-        user.Email = email;
-        user.UserName = email;
-
+        var user = new User
+        {
+            Id = new Guid().ToString(),
+            Email = email,
+            UserName = email,
+            UserDatas = null
+        };
         await userManager.CreateAsync(user, password);
         await userManager.AddToRoleAsync(user, "Admin");
     }
-    
+
 }
 
-
-app.MapFallbackToFile("index.html");
 app.Run();
