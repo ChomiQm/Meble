@@ -89,7 +89,7 @@ builder.Services.AddCors(options =>
     {
         builder.WithOrigins("https://localhost:5173")
                 .AllowAnyMethod()
-                .WithHeaders("content-type", "authorization") // Dodaj "authorization" tutaj
+                .WithHeaders("content-type", "authorization")
                 .AllowCredentials();
     });
 });
@@ -100,7 +100,6 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-
 }
 
 else
@@ -136,40 +135,4 @@ app.MapGet("/", (ClaimsPrincipal user) => $"{user.Identity!.Name}")
     .RequireAuthorization();
 
 app.MapControllers();
-
-//seed initial data
-using (var scope = app.Services.CreateScope())
-{
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-    var roles = new[] { "Admin", "Manager", "User" };
-    foreach (var role in roles)
-    {
-        if (!await roleManager.RoleExistsAsync(role))
-            await roleManager.CreateAsync(new IdentityRole(role));
-    }
-}
-
-using (var scope = app.Services.CreateScope())
-{
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-
-    string email = "chomiczek667@o2.pl";
-    string password = "Pysiec123!";
-
-    if (await userManager.FindByNameAsync(email) == null)
-    {
-        var user = new User
-        {
-            Id = new Guid().ToString(),
-            Email = email,
-            UserName = email,
-            UserDatas = null
-        };
-        await userManager.CreateAsync(user, password);
-        await userManager.AddToRoleAsync(user, "Admin");
-    }
-
-}
-
 app.Run();

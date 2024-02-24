@@ -30,7 +30,7 @@ const AddInfo: React.FC = () => {
         setUserData(prev => ({
             ...prev,
             UserFlatNumber: e.target.value,
-            UserHomeNumber: '' // Reset the UserHomeNumber if UserFlatNumber is changed
+            UserHomeNumber: ''
         }));
     };
 
@@ -40,7 +40,6 @@ const AddInfo: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        // Check if both UserHomeNumber and UserFlatNumber are provided
         if (userData.UserHomeNumber && userData.UserFlatNumber) {
             setError('Wybierz numer domu lub numer mieszkania');
             setLoading(false);
@@ -54,12 +53,12 @@ const AddInfo: React.FC = () => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${accessToken}` // użyj accessToken z AuthContext
+                        'Authorization': `Bearer ${accessToken}`
                     },
                     body: JSON.stringify(userData)
                 },
-                refreshAccessToken, // funkcja odświeżająca token
-                logout // funkcja wylogowująca użytkownika
+                refreshAccessToken,
+                logout
             );
 
             setLoading(false);

@@ -2,11 +2,11 @@
 import fetchWithAuth from '../components/utils/fetchWithAuth';
 import { AuthContext } from '../services/AuthContext';
 import { useDispatch } from 'react-redux';
-import { addToCart } from '../components/actions/CartAction'; // Ustaw poprawną ścieżkę do pliku z akcjami
+import { addToCart } from '../components/actions/CartAction';
 import DeleteFurnitureModal from '../modals/DeleteFurnitureModal';
 import UpdateFurnitureModal from '../modals/UpdateFurnitureModal';
 import AddFurnitureModal from '../modals/AddFurnitureModal';
-import { Slide, Fade } from 'react-slideshow-image';
+import { Slide } from 'react-slideshow-image';
 import 'react-slideshow-image/dist/styles.css';
 
 export interface Furniture {
@@ -104,10 +104,8 @@ const Shop = () => {
 
     const handleConfirmDelete = async () => {
         if (selectedFurnitureId !== null) {
-            // Usuwanie zdjęć mebla z Azure Blob Storage
             await deleteFurniturePhotos(selectedFurnitureId);
 
-            // Usuwanie mebla z bazy danych
             const response = await fetchWithAuth(`https://localhost:7197/furnitures/deleteFurniture/${selectedFurnitureId}`, {
                 method: 'DELETE',
                 headers: {
@@ -116,11 +114,9 @@ const Shop = () => {
             }, refreshAccessToken, logout);
 
             if (response.ok) {
-                // Usuń mebel z listy i zamknij modal
                 setFurnitures(furnitures.filter(furniture => furniture.furnitureId !== selectedFurnitureId));
                 setShowDeleteModal(false);
             } else {
-                // Obsłuż błędy
                 console.error("Błąd podczas usuwania mebla");
             }
         }
@@ -140,30 +136,38 @@ const Shop = () => {
     };
 
     const handleDeletePhoto = async (photoId: number) => {
-        const response = await fetchWithAuth(`https://localhost:7197/photoFurniture/deletePhoto/${photoId}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-            },
-        }, refreshAccessToken, logout);
+        try {
+            const response = await fetchWithAuth(`https://localhost:7197/photoFurniture/deletePhoto/${photoId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+            }, refreshAccessToken, logout);
 
-        if (response.ok) {
-            // Aktualizacja stanu zdjęć po usunięciu
-            setPhotos(photos.filter((photo: { photoId: number; }) => photo.photoId !== photoId));
-        } else {
-            console.error("Błąd podczas usuwania zdjęcia");
-            // Obsługa błędów
+            if (response.ok) {
+                setPhotos(photos.filter((photo: { photoId: number; }) => photo.photoId !== photoId));
+            } else {
+                const errorText = await response.text();
+                console.error("Błąd podczas usuwania zdjęcia: ", errorText);
+                alert(`Wystąpił błąd: ${errorText}`);
+                logout();
+            }
+        } catch (error) {
+            console.error("Wystąpił błąd podczas usuwania zdjęcia: ", error);
+            alert(`Wystąpił błąd: ${error instanceof Error ? error.message : "Nieznany błąd"}`);
+            logout();
         }
     };
 
     const handleUpdateClick = (furniture: Furniture) => {
         setEditingFurniture(furniture);
-        setPhotos(furniture.photos || []); // Aktualizacja stanu zdjęć dla wybranego mebla
+        setPhotos(furniture.photos || []);
         setShowUpdateModal(true);
     };
 
     const handleSaveChanges = async (updatedFurniture: Furniture) => {
-        if (!updatedFurniture.furnitureId) return; // Upewnij się, że furnitureId jest dostępne
+        if (!updatedFurniture.furnitureId) return; // Sprawdzenie, czy mamy ID mebla do aktualizacji
+
         const updatedData = {
             ...updatedFurniture,
             furniturePrice: typeof updatedFurniture.furniturePrice === 'number'
@@ -171,30 +175,36 @@ const Shop = () => {
                 : parseFloat(updatedFurniture.furniturePrice)
         };
 
-        // Wywołaj zapytanie API do aktualizacji mebla
-        const response = await fetchWithAuth(`https://localhost:7197/furnitures/updateFurniture/${updatedFurniture.furnitureId}`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(updatedData)
-        }, refreshAccessToken, logout);
+        try {
+            const response = await fetchWithAuth(`https://localhost:7197/furnitures/updateFurniture/${updatedFurniture.furnitureId}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedData)
+            }, refreshAccessToken, logout);
 
-        if (response.ok) {
-            // Aktualizuj listę mebli po pomyślnej aktualizacji
-            setFurnitures(prevFurnitures => {
-                return prevFurnitures.map(f => {
-                    if (f.furnitureId === updatedFurniture.furnitureId) {
-                        return { ...f, ...updatedFurniture };
-                    }
-                    return f;
+            if (response.ok) {
+                setFurnitures(prevFurnitures => {
+                    return prevFurnitures.map(f => {
+                        if (f.furnitureId === updatedFurniture.furnitureId) {
+                            return { ...f, ...updatedFurniture };
+                        }
+                        return f;
+                    });
                 });
-            });
-            setShowUpdateModal(false);
-        } else {
-            console.error("Błąd podczas aktualizacji mebla");
-            // Dodaj obsługę błędów
+                setShowUpdateModal(false);
+            } else {
+                const errorText = await response.text();
+                console.error("Błąd podczas aktualizacji mebla: ", errorText);
+                alert(`Wystąpił błąd: ${errorText}`);
+                logout();
+            }
+        } catch (error) {
+            console.error("Wystąpił błąd podczas aktualizacji mebla: ", error);
+            alert(`Wystąpił błąd: ${error instanceof Error ? error.message : "Nieznany błąd"}`);
+            logout();
         }
     };
 
@@ -265,19 +275,21 @@ const Shop = () => {
         fetchFurnitures();
     };
 
-    
+    interface ArrowProps {
+        onClick?: () => void;
+    }
 
-    const CustomPrevArrow = ({ onClick }) => (
-        <div style={{position: 'absolute', bottom: '70px', left: '50px', padding: "4px", cursor: 'pointer', margin: '0 10px', zIndex: "999"}} onClick={onClick}>
-          <span>&lt;</span>
+    const CustomPrevArrow: React.FC<ArrowProps> = ({ onClick }) => (
+        <div style={{ position: 'absolute', bottom: '70px', left: '50px', padding: "4px", cursor: 'pointer', margin: '0 10px', zIndex: "999" }} onClick={onClick}>
+            <span>&lt;</span>
         </div>
-      );
-      
-      const CustomNextArrow = ({ onClick }) => (
-        <div style={{position: 'absolute', bottom: '70px', right: '50px', padding: "4px", cursor: 'pointer', margin: '0 10px', zIndex: "999"}} onClick={onClick}>
-          <span>&gt;</span>
+    );
+
+    const CustomNextArrow: React.FC<ArrowProps> = ({ onClick }) => (
+        <div style={{ position: 'absolute', bottom: '70px', right: '50px', padding: "4px", cursor: 'pointer', margin: '0 10px', zIndex: "999" }} onClick={onClick}>
+            <span>&gt;</span>
         </div>
-      );
+    );
     
     return (
         <div className='containerCustom pb-6'>
@@ -290,6 +302,7 @@ const Shop = () => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="inputCustom w-full p-2 rounded border btn border-gray-300"
+                    maxLength={30} 
                 />
                 <select
                     value={selectedCategory}
@@ -318,17 +331,16 @@ const Shop = () => {
                 {furnitures.map((furniture) => (
                     <div className="rounded transform grow transition-transform duration-500 hover:scale-105 border glass px-4 max-w-[300px] py-4 flex flex-col justify-center items-center gap-2 text-white" key={furniture.furnitureId}>
                 <div className='w-full text-lg overflow-hidden'>
-                    <Slide         prevArrow={<CustomPrevArrow onClick={undefined} />}
-                        nextArrow={<CustomNextArrow onClick={undefined} />}>
-                        {furniture.photos && furniture.photos.map(photo => (
-                            <div className='each-slide' key={photo.photoId}>
-                                <div className='flex flex-col justify-center items-center'>
-                                    <img className='w-[429px] rounded' src={photo.photoUrl} alt={photo.photoDescription} />
-                                    {isAdmin && <button className='my-9 text-sm' onClick={() => handleDeletePhoto(photo.photoId)}>Usuń zdjęcie</button>}
-                                </div>
-                            </div>
-                        ))}
-                    </Slide>
+                            <Slide prevArrow={<CustomPrevArrow />} nextArrow={<CustomNextArrow />}>
+                                {furniture.photos && furniture.photos.map(photo => (
+                                    <div className='each-slide' key={photo.photoId}>
+                                        <div className='flex flex-col justify-center items-center'>
+                                            <img className='w-[429px] rounded' src={photo.photoUrl} alt={photo.photoDescription} />
+                                            {isAdmin && <button className='my-9 text-sm' onClick={() => handleDeletePhoto(photo.photoId)}>Usuń zdjęcie</button>}
+                                        </div>
+                                    </div>
+                                ))}
+                            </Slide>
                 </div>
                         <h2 className='flex-1 flex justify-center flex-col items-center font-bold text-center mb-4 p-2 gap-6'>
                             {furniture.furnitureName} - &nbsp;
@@ -357,8 +369,8 @@ const Shop = () => {
                             price: furniture.furniturePrice,
                             description: furniture.furnitureDescription,
                             isAvailable: furniture.isAvailable,
-                            quantity: 1, // Ustawienie początkowej ilości na 1
-                            maxQuantity: furniture.quantity, // Używanie ilości dostępnych mebli jako maksymalnej ilości
+                            quantity: 1,
+                            maxQuantity: furniture.quantity,
                             photos: furniture.photos?.map(p => ({ url: p.photoUrl, description: p.photoDescription })),
                             categories: furniture.categories?.map(c => ({ name: c.categoryName }))
                         }))}>Dodaj do koszyka</button>

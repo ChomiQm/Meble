@@ -1,7 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { OrderDetails } from '.././pages/Order';
 
-
 interface FurniturePhoto {
     photoId: number;
     photoUrl: string;

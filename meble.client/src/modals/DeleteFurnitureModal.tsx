@@ -1,5 +1,4 @@
-﻿// DeleteFurnitureModal.tsx
-import React from 'react';
+﻿import React from 'react';
 
 interface DeleteFurnitureModalProps {
     furnitureId: number;

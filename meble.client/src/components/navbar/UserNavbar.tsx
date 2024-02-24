@@ -1,12 +1,11 @@
 ﻿import  { useContext } from 'react';
 import { Link } from 'react-router-dom';
-import AuthContext from '../../services/AuthContext'; // Importujemy AuthContext
-
+import AuthContext from '../../services/AuthContext';
 const UserNavbar = () => {
-    const { isLoggedIn } = useContext(AuthContext); // Używamy kontekstu autoryzacji
+    const { isLoggedIn } = useContext(AuthContext);
 
     if (!isLoggedIn) {
-        return null; // Nie wyświetlaj Navbar, jeśli użytkownik nie jest zalogowany
+        return null;
     }
 
     return (

@@ -57,10 +57,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         navigate('/');
     }, [setAccessToken, setRefreshToken, navigate]);
 
+    const logoutAndRefresh = useCallback(() => {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+
+        logout();
+
+        window.location.reload();
+    }, [logout]);
+
     const checkUserData = useCallback(async () => {
         if (!accessToken) {
-            console.error("Access token not found");
-            logout();
+            logoutAndRefresh();
             return;
         }
 
@@ -75,10 +83,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     },
                 },
                 refreshAccessToken,
-                logout
+                logoutAndRefresh
             );
 
             if (!userDataResponse.ok) {
+                if (userDataResponse.status === 401) {
+                    logoutAndRefresh();
+                }
                 throw new Error(`Failed to verify user data: ${userDataResponse.status}`);
             }
 
@@ -94,25 +105,28 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     },
                 },
                 refreshAccessToken,
-                logout
+                logoutAndRefresh
             );
 
             if (!userInfoResponse.ok) {
+                if (userInfoResponse.status === 401) {
+                    logoutAndRefresh();
+                }
                 throw new Error(`Failed to get user info: ${userInfoResponse.status}`);
             }
 
             const userInfo = await userInfoResponse.json();
             setRoles(userInfo.roles || []);
 
-            if (!userInfo.roles.includes('Admin') && !hasUserData) {
+            if (!hasUserData) {
                 navigate('/addInfo');
-            } 
+            }
 
         } catch (error) {
             console.error("There was an error:", error);
-            logout();
+            logoutAndRefresh();
         }
-    }, [accessToken, logout, refreshAccessToken, navigate, setHasData, setRoles]);
+    }, [accessToken, logoutAndRefresh, refreshAccessToken, navigate, setHasData, setRoles]);
 
     useEffect(() => {
         if (isLoggedIn) {

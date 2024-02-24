@@ -16,7 +16,6 @@ export interface CartItem {
     categories?: Array<{ name: string; }>;
 }
 
-// Action creators
 export const addToCart = (item: CartItem) => ({
     type: ADD_TO_CART,
     payload: item,

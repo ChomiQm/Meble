@@ -1,5 +1,5 @@
-﻿import imageRight from '../img/imageRight.jpg'; // Przykładowy obraz po prawej
-import imageLeft from '../img/imageLeft.jpg'; // Przykładowy obraz po lewej
+﻿import imageRight from '../img/imageRight.jpg';
+import imageLeft from '../img/imageLeft.jpg';
 
 const MainPage = () => {
     return (

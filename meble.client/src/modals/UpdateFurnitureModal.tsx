@@ -1,5 +1,4 @@
-﻿// UpdateFurnitureModal.tsx
-import React, { useContext, useState } from 'react';
+﻿import React, { useContext, useState } from 'react';
 import { Furniture } from '../pages/Shop';
 import fetchWithAuth from '../components/utils/fetchWithAuth';
 import { AuthContext } from '../services/AuthContext';
@@ -28,7 +27,7 @@ const UpdateFurnitureModal: React.FC<UpdateFurnitureModalProps> = ({ furniture, 
 
     const handleNewPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
-            const filesArray = Array.from(e.target.files); // Zamiana FileList na Array
+            const filesArray = Array.from(e.target.files);
             const newPhotosArray = filesArray.map(file => ({ file, description: '' }));
             setNewPhotos(prev => [...prev, ...newPhotosArray]);
         }
@@ -42,10 +41,8 @@ const UpdateFurnitureModal: React.FC<UpdateFurnitureModalProps> = ({ furniture, 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Tutaj możesz umieścić logikę zapisywania zmian w meblu
         onSave(updatedFurniture);
 
-        // Dodawanie nowych zdjęć
         for (const photo of newPhotos) {
             const formData = new FormData();
             formData.append('file', photo.file);

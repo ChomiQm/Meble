@@ -71,7 +71,6 @@ const AddFurnitureModal: React.FC<AddFurnitureModalProps> = ({ onClose }) => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Najpierw dodaj mebel
         const furnitureResponse = await fetchWithAuth(`https://localhost:7197/furnitures/addFurniture`, {
             method: 'POST',
             headers: {
@@ -84,7 +83,6 @@ const AddFurnitureModal: React.FC<AddFurnitureModalProps> = ({ onClose }) => {
         if (furnitureResponse.ok) {
             const addedFurniture = await furnitureResponse.json();
 
-            // Następnie dodaj kategorię
             if (categoryName) {
                 await fetchWithAuth(`https://localhost:7197/furnitureCategories/addCategory`, {
                     method: 'POST',
@@ -96,7 +94,6 @@ const AddFurnitureModal: React.FC<AddFurnitureModalProps> = ({ onClose }) => {
                 }, refreshAccessToken, logout);
             }
 
-            // Następnie, jeśli są pliki, dodaj zdjęcia
             for (const photo of photos) {
                 const formData = new FormData();
                 formData.append('file', photo.file);
