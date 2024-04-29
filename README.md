@@ -22,21 +22,21 @@ Before you begin, ensure you have the following installed:
 To get a local copy up and running, follow these simple steps:
 
 1. Clone the repository:
-   ```bash
-   git clone https://your-repository-url
-   cd mebloart
-   ```
+```bash
+git clone https://your-repository-url
+cd mebloart
+```
 2. Install NPM packages
 ```bash
-  cd frontend
-  npm install
+cd frontend
+npm install
 ```
-4. Restore .NET packages for the backend:
-   ```bash
-   cd ../backend
-   dotnet restore
-   ```
-5. Update the appsettings.json file with your connection strings and other configurations as follows:
+3. Restore .NET packages for the backend:
+```bash
+cd ../backend
+dotnet restore
+```
+4. Update the appsettings.json file with your connection strings and other configurations as follows:
   ```json
    {
   "Logging": {
@@ -69,3 +69,8 @@ dotnet run
 ```bash
 npm start
 ```
+
+### Important Note
+Ensure to populate your Azure Blob Storage and SQL database with the necessary data as these are hosted on the cloud and need proper configuration.
+### Contributing
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated.
