@@ -76,3 +76,16 @@ npm start
 Ensure to populate your Azure Blob Storage and SQL database with the necessary data as these are hosted on the cloud and need proper configuration.
 ### Contributing
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated.
+
+## Important Note V2
+
+Before running the application, it is essential to apply database migrations to ensure the database schema is up-to-date with the current application model. You can perform migrations using the following steps:
+
+**Run the migration command**
+- In the Package Manager Console, type:
+```bash
+Update-Database
+```
+- This command will apply the latest migrations to your database as defined in the Entity Framework configuration.
+
+Failure to perform these migrations may result in runtime errors due to schema mismatches between the application and the database.
