@@ -2,6 +2,8 @@
 
 MebloArt is a modern furniture catalog/shop application built with C#, .NET 8.0, and integrated with Azure services. The front-end is developed using ReactJS, TypeScript, and Vite, creating a dynamic user experience.
 
+![MebloArt App Screenshot](MainPage.png)
+
 ## Features
 
 - Full-stack application with ReactJS front-end and C# backend.
@@ -24,16 +26,16 @@ To get a local copy up and running, follow these simple steps:
 1. Clone the repository:
 ```bash
 git clone https://your-repository-url
-cd mebloart
+cd Meble
 ```
 2. Install NPM packages
 ```bash
-cd frontend
+cd Meble.client
 npm install
 ```
 3. Restore .NET packages for the backend:
 ```bash
-cd ../backend
+cd ../Meble.Server
 dotnet restore
 ```
 4. Update the appsettings.json file with your connection strings and other configurations as follows:
