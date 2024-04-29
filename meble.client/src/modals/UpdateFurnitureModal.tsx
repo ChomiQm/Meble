@@ -49,7 +49,7 @@ const UpdateFurnitureModal: React.FC<UpdateFurnitureModalProps> = ({ furniture, 
             formData.append('photoDescription', photo.description);
 
             try {
-                const photoResponse = await fetchWithAuth(`https://localhost:7197/photoFurniture/addPhoto/${updatedFurniture.furnitureId}`, {
+                const photoResponse = await fetchWithAuth(`https://mebloartbackend.azurewebsites.net/photoFurniture/addPhoto/${updatedFurniture.furnitureId}`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,

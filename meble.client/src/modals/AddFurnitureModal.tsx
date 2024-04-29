@@ -71,7 +71,7 @@ const AddFurnitureModal: React.FC<AddFurnitureModalProps> = ({ onClose }) => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const furnitureResponse = await fetchWithAuth(`https://localhost:7197/furnitures/addFurniture`, {
+        const furnitureResponse = await fetchWithAuth(`https://mebloartbackend.azurewebsites.net/furnitures/addFurniture`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
@@ -84,7 +84,7 @@ const AddFurnitureModal: React.FC<AddFurnitureModalProps> = ({ onClose }) => {
             const addedFurniture = await furnitureResponse.json();
 
             if (categoryName) {
-                await fetchWithAuth(`https://localhost:7197/furnitureCategories/addCategory`, {
+                await fetchWithAuth(`https://mebloartbackend.azurewebsites.net/furnitureCategories/addCategory`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
@@ -100,7 +100,7 @@ const AddFurnitureModal: React.FC<AddFurnitureModalProps> = ({ onClose }) => {
                 formData.append('photoDescription', photo.description);
 
                 try {
-                    const photoResponse = await fetchWithAuth(`https://localhost:7197/photoFurniture/addPhoto/${addedFurniture.furnitureId}`, {
+                    const photoResponse = await fetchWithAuth(`https://mebloartbackend.azurewebsites.net/photoFurniture/addPhoto/${addedFurniture.furnitureId}`, {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${accessToken}`,
@@ -154,7 +154,7 @@ const AddFurnitureModal: React.FC<AddFurnitureModalProps> = ({ onClose }) => {
                         onChange={handleChange}
                         placeholder="Opis mebla"
                     />
-                    <label>Ilość w magazyniea</label>
+                    <label>Ilość w magazynie</label>
                     <input
                         className='rounded text-gray-500 p-1 border border-gray-500'
                         type="number"

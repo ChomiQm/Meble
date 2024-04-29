@@ -8,14 +8,12 @@ const Register: React.FC = () => {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');
-    const [phoneNumber, setPhoneNumber] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
     const navigate = useNavigate();
 
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    const phoneRegex = /^\+\d{2}\s\d{3}-\d{3}-\d{3}$/;
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -24,12 +22,6 @@ const Register: React.FC = () => {
 
         if (!passwordRegex.test(password)) {
             setError('Password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.');
-            setLoading(false);
-            return;
-        }
-
-        if (!phoneRegex.test(phoneNumber)) {
-            setError('Phone number must be in the format +XX/XXX XXX-XXX-XXX.');
             setLoading(false);
             return;
         }
@@ -49,8 +41,7 @@ const Register: React.FC = () => {
             },
             body: JSON.stringify({
                 Email: email,
-                Password: password,
-                PhoneNumber: phoneNumber
+                Password: password
             })
         }).then(async (response) => {
             setLoading(false);
@@ -95,14 +86,6 @@ const Register: React.FC = () => {
                             placeholder="Potwierdź hasło"
                             maxLength={24}
                         />
-                        <RegisterInput
-                            type="text"
-                            value={phoneNumber}
-                            onChange={(e) => setPhoneNumber(e.target.value)}
-                            placeholder="Numer telefonu"
-                            maxLength={18}
-                            pattern={phoneRegex.source} 
-                        />
                         <RegisterButton isLoading={loading}>Zarejestruj się</RegisterButton>
                     </form>
                 </div>
@@ -118,7 +101,7 @@ const Register: React.FC = () => {
                                 <li>Przynajmniej jedna duża litera (A-Z)</li>
                                 <li>Przynajmniej jedna mała litera (a-z)</li>
                                 <li>Przynajmniej jedna cyfra (0-9)</li>
-                                <li>Przynajmniej jeden znak specjalny (np. !, @, #)</li>
+                                <li>Przynajmniej jeden znak specjalny (!, @)</li>
                             </ul>
                         </div>
                         <div className="w-full md:w-1/2">

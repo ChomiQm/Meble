@@ -20,7 +20,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderDetails, onC
     useEffect(() => {
         const fetchPhotosForFurniture = async () => {
             const photos = await Promise.all(orderDetails.furnitures.map(async (furniture) => {
-                const response = await fetchWithAuth(`https://localhost:7197/photoFurniture/getPhoto/${furniture.furnitureId}`, {
+                const response = await fetchWithAuth(`https://mebloartbackend.azurewebsites.net/photoFurniture/getPhoto/${furniture.furnitureId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,

@@ -8,7 +8,7 @@ const useLogout = () => {
 
     const handleLogout = async () => {
         try {
-            const response = await fetchWithAuth('https://localhost:7197/account/logout', {
+            const response = await fetchWithAuth('https://mebloartbackend.azurewebsites.net/account/logout', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

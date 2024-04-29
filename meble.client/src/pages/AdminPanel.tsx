@@ -78,7 +78,6 @@ const AdminPanel = () => {
             }, refreshAccessToken, logout);
 
             if (response.ok) {
-                // Usuń zamówienie z lokalnego stanu po pomyślnym usunięciu
                 setOrders(orders.filter(order => order.orderId !== orderId));
             } else {
                 setError('Błąd podczas usuwania zamówienia');

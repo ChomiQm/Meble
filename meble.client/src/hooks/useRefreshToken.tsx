@@ -11,14 +11,14 @@ function useRefreshToken() {
         setIsRefreshing(true);
 
         if (!refreshToken) {
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
             setIsRefreshing(false);
-            setAccessToken(null);
-            setRefreshToken(null);
             return null;
         }
 
         try {
-            const response = await fetch('https://localhost:7197/refresh', {
+            const response = await fetch('https://mebloartbackend.azurewebsites.net/refresh', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ refreshToken })
@@ -34,16 +34,16 @@ function useRefreshToken() {
 
                 return newAccessToken;
             } else {
-                setAccessToken(null);
-                setRefreshToken(null);
+                localStorage.removeItem("accessToken");
+                localStorage.removeItem("refreshToken");
                 const data = await response.text();
                 throw new Error(`B³¹d podczas odœwie¿ania tokena. Status: ${response.status}, Tekst: ${data || 'Nie mo¿na odœwie¿yæ tokena.'}`);
             }
         } catch (err) {
             const errorMsg = (err instanceof Error) ? err.message : 'Nieznany b³¹d';
             setError(new Error(errorMsg));
-            setAccessToken(null);
-            setRefreshToken(null);
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
             return null;
         } finally {
             setIsRefreshing(false);

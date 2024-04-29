@@ -21,7 +21,7 @@ interface User {
 const Manage = () => {
     const { accessToken, refreshAccessToken, logout } = useContext(AuthContext);
     const [userData, setUserData] = useState<UserData | null>(null);
-    const [user, setUser] = useState<User | null>(null); // Tu było błędnie null zamiast {}
+    const [user, setUser] = useState<User | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {

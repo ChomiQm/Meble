@@ -42,7 +42,7 @@ const Shop = () => {
     const [furnitures, setFurnitures] = useState<Furniture[]>([]);
     const [error, setError] = useState<string | null>(null);
     const dispatch = useDispatch();
-    const isAdmin = roles.includes('Admin'); // Sprawdzenie, czy użytkownik jest administratorem
+    const isAdmin = roles.includes('Admin');
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedFurnitureId, setSelectedFurnitureId] = useState<number | null>(null);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -166,7 +166,7 @@ const Shop = () => {
     };
 
     const handleSaveChanges = async (updatedFurniture: Furniture) => {
-        if (!updatedFurniture.furnitureId) return; // Sprawdzenie, czy mamy ID mebla do aktualizacji
+        if (!updatedFurniture.furnitureId) return;
 
         const updatedData = {
             ...updatedFurniture,

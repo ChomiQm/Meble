@@ -49,8 +49,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, [setAccessToken, setRefreshToken, navigate]);
 
     const logout = useCallback(() => {
-        setAccessToken(null);
-        setRefreshToken(null);
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
         setLoginStatus(false);
         setHasData(false);
         setRoles([]);
@@ -74,7 +74,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
         try {
             const userDataResponse = await fetchWithAuth(
-                'https://localhost:7197/info/hasUserData',
+                'https://mebloartbackend.azurewebsites.net/info/hasUserData',
                 {
                     method: 'POST',
                     headers: {
@@ -97,7 +97,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             setHasData(hasUserData);
 
             const userInfoResponse = await fetchWithAuth(
-                'https://localhost:7197/info/me',
+                'https://mebloartbackend.azurewebsites.net/info/me',
                 {
                     method: 'GET',
                     headers: {
