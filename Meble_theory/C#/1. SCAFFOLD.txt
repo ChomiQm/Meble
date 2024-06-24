@@ -1,1 +1,0 @@
-Scaffold-DbContext "Server=tcp:firma-rodzinna-server.database.windows.net,1433;Initial Catalog=firma_rodzinna_db;Persist Security Info=False;User ID=106811@student.san.edu.pl;Password=Grzechu2022!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Authentication=Active Directory Password" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -Force
